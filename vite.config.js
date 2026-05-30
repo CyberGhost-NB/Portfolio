@@ -15,5 +15,16 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
-  ]
+  ],
+  server: {
+  proxy: {
+    '/api': {
+      target: 'https://script.google.com',
+      changeOrigin: true,
+      secure: true
+    }
+  }
+} 
+
 });
+

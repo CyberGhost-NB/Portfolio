@@ -204,6 +204,11 @@ export async function fetchPortfolioContent(apiUrl) {
     return fallbackPortfolioContent;
   }
 
+  if (apiUrl.includes('script.google.com')) {
+    const remoteContent = await fetchPortfolioContentJsonp(apiUrl);
+    return mergePortfolioContent(fallbackPortfolioContent, remoteContent);
+  }
+
   const response = await fetch(apiUrl);
 
   if (!response.ok) {
@@ -212,4 +217,39 @@ export async function fetchPortfolioContent(apiUrl) {
 
   const remoteContent = await response.json();
   return mergePortfolioContent(fallbackPortfolioContent, remoteContent);
+}
+
+function fetchPortfolioContentJsonp(apiUrl) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `portfolioContent_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement('script');
+    const url = new URL(apiUrl);
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      reject(new Error('Portfolio content JSONP request timed out'));
+    }, 10000);
+
+    url.searchParams.set('callback', callbackName);
+    url.searchParams.set('cacheBust', Date.now().toString());
+
+    window[callbackName] = (payload) => {
+      cleanup();
+      resolve(payload);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error('Portfolio content JSONP request failed'));
+    };
+
+    script.src = url.toString();
+    script.async = true;
+    document.head.appendChild(script);
+
+    function cleanup() {
+      window.clearTimeout(timeout);
+      delete window[callbackName];
+      script.remove();
+    }
+  });
 }

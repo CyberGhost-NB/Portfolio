@@ -11,8 +11,15 @@ const SHEET_NAMES = {
   socialLinks: 'SocialLinks',
 };
 
-function doGet() {
-  return jsonResponse(buildPortfolioContent());
+function doGet(event) {
+  const payload = buildPortfolioContent();
+  const callback = event && event.parameter && event.parameter.callback;
+
+  if (callback) {
+    return javascriptResponse(callback + '(' + JSON.stringify(payload) + ');');
+  }
+
+  return jsonResponse(payload);
 }
 
 function buildPortfolioContent() {
@@ -156,6 +163,10 @@ function normalizeValue(value) {
 
 function jsonResponse(payload) {
   return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function javascriptResponse(source) {
+  return ContentService.createTextOutput(source).setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
 function setupPortfolioSheets() {
