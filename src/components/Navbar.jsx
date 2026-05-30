@@ -2,12 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-
-const navItems = [
-  { label: 'WORK', href: '#work' },
-  { label: 'ABOUT', href: '#about' },
-  { label: 'CONTACT', href: '#contact' },
-];
+import { usePortfolioContent } from '@/context/PortfolioContentContext';
 
 function NavLink({ label, href, onClick }) {
   return (
@@ -24,11 +19,13 @@ function NavLink({ label, href, onClick }) {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { content } = usePortfolioContent();
+  const navItems = content.navItems;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-6 flex items-center justify-between">
       <Link to="/" className="font-serif text-lg md:text-xl text-foreground tracking-tight">
-        PORTFOLIO
+        {content.site.brand}
       </Link>
 
       {/* Desktop */}

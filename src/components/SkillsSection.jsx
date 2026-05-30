@@ -1,44 +1,15 @@
 import { motion } from 'framer-motion';
 import { Code2, Server, Wrench } from 'lucide-react';
+import { usePortfolioContent } from '@/context/PortfolioContentContext';
 
-const CATEGORIES = [
-  {
-    label: 'Frontend',
-    icon: Code2,
-    skills: [
-      { name: 'React', level: 95 },
-      { name: 'TypeScript', level: 90 },
-      { name: 'Next.js', level: 85 },
-      { name: 'Tailwind CSS', level: 92 },
-      { name: 'Framer Motion', level: 80 },
-      { name: 'GraphQL', level: 75 },
-    ],
-  },
-  {
-    label: 'Backend',
-    icon: Server,
-    skills: [
-      { name: 'Node.js', level: 90 },
-      { name: 'PostgreSQL', level: 85 },
-      { name: 'Redis', level: 78 },
-      { name: 'REST APIs', level: 95 },
-      { name: 'Python', level: 72 },
-      { name: 'MongoDB', level: 80 },
-    ],
-  },
-  {
-    label: 'Tools & Infra',
-    icon: Wrench,
-    skills: [
-      { name: 'AWS', level: 82 },
-      { name: 'Docker', level: 85 },
-      { name: 'Git', level: 95 },
-      { name: 'CI/CD', level: 80 },
-      { name: 'Figma', level: 70 },
-      { name: 'Linux', level: 78 },
-    ],
-  },
-];
+const ICONS = {
+  code: Code2,
+  frontend: Code2,
+  server: Server,
+  backend: Server,
+  wrench: Wrench,
+  tools: Wrench,
+};
 
 function SkillBar({ name, level, index }) {
   return (
@@ -66,8 +37,9 @@ function SkillBar({ name, level, index }) {
   );
 }
 
-function CategoryCard({ category, index }) {
-  const Icon = category.icon;
+function CategoryCard({ category, index, categoryPrefix }) {
+  const Icon = ICONS[category.icon] || Wrench;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 32 }}
@@ -76,18 +48,18 @@ function CategoryCard({ category, index }) {
       transition={{ duration: 0.8, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col gap-8 border border-white/5 p-8 hover:border-primary/20 transition-colors duration-500"
     >
-      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="w-9 h-9 border border-primary/30 flex items-center justify-center">
           <Icon size={16} className="text-primary" />
         </div>
         <div>
-          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-0.5">Category 0{index + 1}</p>
+          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-0.5">
+            {categoryPrefix} 0{index + 1}
+          </p>
           <h3 className="font-serif text-xl text-foreground">{category.label}</h3>
         </div>
       </div>
 
-      {/* Skill bars */}
       <div className="flex flex-col gap-5">
         {category.skills.map((skill, i) => (
           <SkillBar key={skill.name} {...skill} index={i} />
@@ -98,6 +70,9 @@ function CategoryCard({ category, index }) {
 }
 
 export default function SkillsSection() {
+  const { content } = usePortfolioContent();
+  const skills = content.skills;
+
   return (
     <section id="skills" className="relative bg-background py-[clamp(5rem,12vw,14rem)] px-6 md:px-12 lg:px-20 overflow-hidden">
       <motion.div
@@ -109,7 +84,6 @@ export default function SkillsSection() {
       />
 
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div>
             <motion.div
@@ -119,7 +93,7 @@ export default function SkillsSection() {
               className="flex items-center gap-3 mb-4"
             >
               <div className="w-8 h-[1px] bg-primary" />
-              <span className="font-mono text-[11px] tracking-[0.3em] uppercase text-primary">Expertise</span>
+              <span className="font-mono text-[11px] tracking-[0.3em] uppercase text-primary">{skills.eyebrow}</span>
             </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 24 }}
@@ -128,8 +102,9 @@ export default function SkillsSection() {
               transition={{ duration: 0.9, delay: 0.1 }}
               className="font-serif text-[clamp(2rem,4vw,3.5rem)] leading-[0.95] text-foreground"
             >
-              Skills &amp;<br />
-              <span className="italic text-primary">Capabilities.</span>
+              {skills.title}
+              <br />
+              <span className="italic text-primary">{skills.highlight}</span>
             </motion.h2>
           </div>
           <motion.p
@@ -139,15 +114,14 @@ export default function SkillsSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-muted-foreground text-sm font-mono tracking-wide max-w-xs md:text-right leading-relaxed"
           >
-            A full-stack toolkit honed across 5+ years of production-grade engineering.
+            {skills.description}
           </motion.p>
         </div>
 
-        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5">
-          {CATEGORIES.map((cat, i) => (
-            <div key={cat.label} className="bg-background">
-              <CategoryCard category={cat} index={i} />
+          {skills.categories.map((category, i) => (
+            <div key={category.id || category.label} className="bg-background">
+              <CategoryCard category={category} index={i} categoryPrefix={skills.categoryPrefix} />
             </div>
           ))}
         </div>

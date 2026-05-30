@@ -1,12 +1,6 @@
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRef } from 'react';
-
-const STATS = [
-  { value: '3+', label: 'Years of Workking Experience' },
-  { value: '2+', label: 'Work Experience' },
-];
-
-const PHOTO = 'https://instagram.fbpn2-1.fna.fbcdn.net/v/t51.82787-15/655205341_18096730301053052_2033629522655204751_n.jpg?stp=dst-jpg_e35_s480x480_tt6&_nc_cat=105&ig_cache_key=MzE4NjA5MDYyMDg2NzY5MTIxMA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=jWHNEkkCVwEQ7kNvwEK6yXR&_nc_oc=Adqs9irzei4pfOsSJsUHHJ8Y9RFnID_wErJEQSU-jJ1Zkf-Ryh_v3AX72CqwNBMmJGI&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fbpn2-1.fna&_nc_gid=RU5e1p78f5Vo7OJuEH8LRg&_nc_ss=7a22e&oh=00_Af55-btM8kO6B1bic2i1AGL0SMadKzcKpkXOj580NaD8Mw&oe=6A1B2F48';
+import { usePortfolioContent } from '@/context/PortfolioContentContext';
 
 function StatCard({ value, label, index }) {
   return (
@@ -25,6 +19,8 @@ function StatCard({ value, label, index }) {
 
 export default function AboutSection() {
   const ref = useRef(null);
+  const { content } = usePortfolioContent();
+  const about = content.about;
 
   return (
     <section id="about" className="relative bg-background py-[clamp(5rem,12vw,14rem)] px-6 md:px-12 lg:px-20 overflow-hidden">
@@ -45,11 +41,10 @@ export default function AboutSection() {
           className="flex items-center gap-3 mb-16"
         >
           <div className="w-8 h-[1px] bg-primary" />
-          <span className="font-mono text-[11px] tracking-[0.3em] uppercase text-primary">About Me</span>
+          <span className="font-mono text-[11px] tracking-[0.3em] uppercase text-primary">{about.eyebrow}</span>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-20">
-          {/* Photo */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -61,21 +56,20 @@ export default function AboutSection() {
               <div className="absolute -top-4 -left-4 w-full h-full border border-primary/20" />
               <div className="relative overflow-hidden aspect-[4/5]">
                 <img
-                  src={PHOTO}
-                  alt="Alex Rivera"
+                  src={about.photo}
+                  alt={about.photoAlt}
                   className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-primary px-4 py-3">
                 <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary-foreground">
-                  Available for work
+                  {about.status}
                 </span>
               </div>
             </div>
           </motion.div>
 
-          {/* Bio */}
           <div ref={ref} className="flex flex-col gap-8">
             <motion.h2
               initial={{ opacity: 0, y: 24 }}
@@ -84,8 +78,8 @@ export default function AboutSection() {
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               className="font-serif text-[clamp(2rem,4vw,3.5rem)] leading-[0.95] tracking-tight text-foreground"
             >
-              Not limited by experience, <br />
-              <span className="italic text-primary">Driven by the ability to learn and adapt.</span>
+              {about.headline} <br />
+              <span className="italic text-primary">{about.highlight}</span>
             </motion.h2>
 
             <motion.p
@@ -95,11 +89,7 @@ export default function AboutSection() {
               transition={{ duration: 0.9, delay: 0.15 }}
               className="text-muted-foreground leading-[1.8] text-lg"
             >
-              I'm Nasa Balthazar ST Padan, an Information and Data Administration Officer based in Bulungan, Kalimantan Utara, 
-              with nearly 2 years of professional experience in administration, data management, and digital communication. 
-              I graduated in Information Systems from Atma Jaya University Yogyakarta and have worked on government administration, organizational coordination, and technology-driven projects. 
-              I specialize in data reporting, content and website management, UI/UX design, and Unity development, with a strong focus on teamwork, adaptability, and delivering efficient digital solutions.
-              
+              {about.bio}
             </motion.p>
 
             <motion.div
@@ -109,7 +99,7 @@ export default function AboutSection() {
               transition={{ duration: 0.9, delay: 0.25 }}
               className="flex flex-wrap gap-3"
             >
-              {['React', 'TypeScript', 'Node.js', 'AWS', 'PostgreSQL', 'Docker'].map((skill) => (
+              {about.skills.map((skill) => (
                 <span
                   key={skill}
                   className="font-mono text-[10px] tracking-[0.15em] uppercase border border-white/10 px-3 py-2 text-muted-foreground hover:border-primary hover:text-primary transition-all duration-300"
@@ -121,10 +111,9 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* Stats row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12">
-          {STATS.map((s, i) => (
-            <StatCard key={s.label} {...s} index={i} />
+          {about.stats.map((stat, i) => (
+            <StatCard key={stat.label} {...stat} index={i} />
           ))}
         </div>
       </div>
