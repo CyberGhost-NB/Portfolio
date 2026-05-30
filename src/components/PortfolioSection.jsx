@@ -2,6 +2,17 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
+/**
+ * @typedef {Object} Project
+ * @property {number} id
+ * @property {string} title
+ * @property {string} description
+ * @property {string} category
+ * @property {string} image
+ * @property {string} year
+ */
+
+/** @type {Project[]} */
 const PROJECTS = [
   {
     id: 1,
@@ -55,6 +66,9 @@ const PROJECTS = [
 
 const CATEGORIES = ['All', 'Web App', 'Full Stack', 'Mobile', 'UI/UX'];
 
+/**
+ * @param {{ project: Project, index: number }} props
+ */
 function ProjectCard({ project, index }) {
   return (
     <motion.div
